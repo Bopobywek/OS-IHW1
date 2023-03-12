@@ -1,4 +1,4 @@
-all: ../reader transformer writer program
+all: reader transformer writer program
 
 reader: reader.c
 	gcc reader.c -o reader

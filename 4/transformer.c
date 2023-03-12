@@ -31,19 +31,21 @@ int main(int argc, char *argv[]) {
     read(pipe_in_fd, buffer, INDICATOR_SIZE);
     int bytes_received = atoi(buffer);
     ssize_t read_bytes = read(pipe_in_fd, buffer, bytes_received);
-    char sent_bytes[10];
+    char sent_bytes[INDICATOR_SIZE];
     while (read_bytes > 0) {
         printf("Transformer is here2, bytes %ld\n", read_bytes);
         replaceLetters(buffer, read_bytes);
 
         sprintf(sent_bytes, "%ld", read_bytes);
-        write(pipe_out_fd, sent_bytes, 10);
+        write(pipe_out_fd, sent_bytes, INDICATOR_SIZE);
         write(pipe_out_fd, buffer, read_bytes); // \0 ???
 
         read(pipe_in_fd, buffer, INDICATOR_SIZE);
         bytes_received = atoi(buffer);
         read_bytes = read(pipe_in_fd, buffer, bytes_received);
     }
+    sprintf(sent_bytes, "0");
+    write(pipe_out_fd, sent_bytes, INDICATOR_SIZE);
 
     printf("TRANSFORMER EXIT\n");
     return 0;
