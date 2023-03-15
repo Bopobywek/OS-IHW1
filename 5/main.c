@@ -64,9 +64,6 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    int fd1[2];
-    int fd2[2];
-
     mknod(RT_PIPE, S_IFIFO | 0666, 0);
     mknod(TW_PIPE, S_IFIFO | 0666, 0);
 
