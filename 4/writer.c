@@ -9,27 +9,38 @@
 
 char buffer[BUFFER_SIZE];
 
+int getAvailableBytes(int pipe_in_fd) {
+    read(pipe_in_fd, buffer, INDICATOR_SIZE);
+    return atoi(buffer);
+}
+
 int main(int argc, char *argv[]) {
 
     int pipe_in_fd = atoi(argv[1]);
     char *filename = argv[2];
 
     int fd_output = open(filename, O_WRONLY | O_CREAT | O_TRUNC);
-    printf("WRITER is here\n");
 
-    read(pipe_in_fd, buffer, INDICATOR_SIZE);
-    int bytes_received = atoi(buffer);
+    // Если файл не удалось открыть, выводим информационное сообщение об ошибке.
+    // Но работу не заканчиваем, так как до этого нужно прочитать информацию из пайпа.
+    // Потому что может возникнуть ситуация, когда пайп переполнен и write()
+    // у другого потока блокирует выполнение.
+    if (fd_output < 0) {
+
+    }
+
+    int bytes_received = getAvailableBytes(pipe_in_fd);
     ssize_t read_bytes = read(pipe_in_fd, buffer, bytes_received);
     while (read_bytes > 0) {
-        write(fd_output, buffer, read_bytes); // \0 ???
+        if (fd_output >= 0) {
+            write(fd_output, buffer, read_bytes);
+        }
 
-        read(pipe_in_fd, buffer, INDICATOR_SIZE);
-        bytes_received = atoi(buffer);
+        bytes_received = getAvailableBytes(pipe_in_fd);
         read_bytes = read(pipe_in_fd, buffer, bytes_received);
     }
 
     close(fd_output);
-    printf("WRITER EXIT\n");
 
     return 0;
 }

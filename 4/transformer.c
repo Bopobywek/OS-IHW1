@@ -21,32 +21,34 @@ void replaceLetters(char string[], ssize_t size) {
 }
 
 char buffer[BUFFER_SIZE];
+char sent_bytes[INDICATOR_SIZE];
+
+int getAvailableBytes(int pipe_in_fd) {
+    read(pipe_in_fd, buffer, INDICATOR_SIZE);
+    return atoi(buffer);
+}
 
 int main(int argc, char *argv[]) {
 
     int pipe_in_fd = atoi(argv[1]);
     int pipe_out_fd = atoi(argv[2]);
 
-    printf("Transformer is here\n");
-    read(pipe_in_fd, buffer, INDICATOR_SIZE);
-    int bytes_received = atoi(buffer);
+    int bytes_received = getAvailableBytes(pipe_in_fd);
     ssize_t read_bytes = read(pipe_in_fd, buffer, bytes_received);
-    char sent_bytes[INDICATOR_SIZE];
     while (read_bytes > 0) {
-        printf("Transformer is here2, bytes %ld\n", read_bytes);
         replaceLetters(buffer, read_bytes);
 
         sprintf(sent_bytes, "%ld", read_bytes);
         write(pipe_out_fd, sent_bytes, INDICATOR_SIZE);
-        write(pipe_out_fd, buffer, read_bytes); // \0 ???
 
-        read(pipe_in_fd, buffer, INDICATOR_SIZE);
-        bytes_received = atoi(buffer);
+        write(pipe_out_fd, buffer, read_bytes);
+
+        bytes_received = getAvailableBytes(pipe_in_fd);
         read_bytes = read(pipe_in_fd, buffer, bytes_received);
     }
+
     sprintf(sent_bytes, "0");
     write(pipe_out_fd, sent_bytes, INDICATOR_SIZE);
 
-    printf("TRANSFORMER EXIT\n");
     return 0;
 }

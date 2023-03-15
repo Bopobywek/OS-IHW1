@@ -9,7 +9,7 @@
 int createReader(char *pipe_out, char *filename) {
     pid_t chpid = fork();
     if (chpid == 0) {
-        (void) execlp("./reader", "./reader", pipe_out, filename, 0);
+        (void) execlp("./reader", "./reader", pipe_out, filename, (char *)0);
         exit(0);
     }
 
@@ -19,7 +19,7 @@ int createReader(char *pipe_out, char *filename) {
 int createTransformer(char *pipe_in, char *pipe_out) {
     pid_t chpid = fork();
     if (chpid == 0) {
-        (void) execlp("./transformer", "./transformer", pipe_in, pipe_out, 0);
+        (void) execlp("./transformer", "./transformer", pipe_in, pipe_out, (char *)0);
         exit(0);
     }
 
@@ -29,7 +29,7 @@ int createTransformer(char *pipe_in, char *pipe_out) {
 int createWriter(char *pipe_in, char *filename) {
     pid_t chpid = fork();
     if (chpid == 0) {
-        (void) execlp("./writer", "./writer", pipe_in, filename, 0);
+        (void) execlp("./writer", "./writer", pipe_in, filename, (char *)0);
         exit(0);
     }
 
@@ -55,9 +55,10 @@ void continueIfPipeIsOpen(int status) {
 int main(int argc, char *argv[]) {
 
     if (argc != 3) {
-        printf("argc: %d", argc);
+        printf("Only 2 arguments expected: <filename_in> <filename_out>\n");
         exit(-1);
     }
+
     int fd1[2];
     int fd2[2];
 
