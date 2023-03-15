@@ -2,16 +2,13 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <fcntl.h>
-#include <sys/stat.h>
 #include "constants.h"
 
 char buffer[BUFFER_SIZE];
 char sent_bytes[INDICATOR_SIZE];
 
 int main(int argc, char *argv[]) {
-
     if (argc != 3) {
         printf("Reader receive invalid count of arguments: 2 expected, but %d given\n", argc - 1);
         exit(-1);

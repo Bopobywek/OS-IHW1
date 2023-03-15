@@ -4,12 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
-#include <fcntl.h>
 
 int createReader(char *pipe_out, char *filename) {
     pid_t chpid = fork();
     if (chpid == 0) {
-        (void) execlp("./reader", "./reader", pipe_out, filename, (char *)0);
+        (void) execlp("./reader", "./reader", pipe_out, filename, NULL);
         exit(0);
     }
 
@@ -19,7 +18,7 @@ int createReader(char *pipe_out, char *filename) {
 int createTransformer(char *pipe_in, char *pipe_out) {
     pid_t chpid = fork();
     if (chpid == 0) {
-        (void) execlp("./transformer", "./transformer", pipe_in, pipe_out, (char *)0);
+        (void) execlp("./transformer", "./transformer", pipe_in, pipe_out, NULL);
         exit(0);
     }
 
@@ -29,7 +28,7 @@ int createTransformer(char *pipe_in, char *pipe_out) {
 int createWriter(char *pipe_in, char *filename) {
     pid_t chpid = fork();
     if (chpid == 0) {
-        (void) execlp("./writer", "./writer", pipe_in, filename, (char *)0);
+        (void) execlp("./writer", "./writer", pipe_in, filename, NULL);
         exit(0);
     }
 
@@ -41,19 +40,18 @@ void continueIfProcessStart(pid_t pid, char *process_name) {
         return;
     }
 
-    printf("%s broken", process_name);
+    printf("Can't run %s process\n", process_name);
     exit(-1);
 }
 
 void continueIfPipeIsOpen(int status) {
     if (status < 0) {
-        printf("Can't open pipe");
+        printf("Can't open pipe\n");
         exit(-1);
     }
 }
 
 int main(int argc, char *argv[]) {
-
     if (argc != 3) {
         printf("Only 2 arguments expected: <filename_in> <filename_out>\n");
         exit(-1);
@@ -93,5 +91,6 @@ int main(int argc, char *argv[]) {
     close(fd1[1]);
     close(fd2[0]);
     close(fd2[1]);
+
     return 0;
 }

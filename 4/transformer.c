@@ -2,9 +2,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include "constants.h"
 
 int isVowel(char letter) {
@@ -29,6 +26,10 @@ int getAvailableBytes(int pipe_in_fd) {
 }
 
 int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        printf("Reader receive invalid count of arguments: 2 expected, but %d given\n", argc - 1);
+        exit(-1);
+    }
 
     int pipe_in_fd = atoi(argv[1]);
     int pipe_out_fd = atoi(argv[2]);
