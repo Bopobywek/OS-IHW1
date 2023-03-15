@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     int pipe_in_fd = atoi(argv[1]);
     char *filename = argv[2];
 
-    int fd_output = open(filename, O_WRONLY | O_CREAT | O_TRUNC);
+    int fd_output = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 
     // Если файл не удалось открыть, выводим информационное сообщение об ошибке.
     // Но работу не заканчиваем, так как до этого нужно прочитать информацию из пайпа.
