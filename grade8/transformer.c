@@ -42,7 +42,6 @@ int main(int argc, char *argv[]) {
     printf("IN_FD: %d, OUT_FD: %d\n", pipe_in_fd, pipe_out_fd);
 
     int bytes_received = getAvailableBytes(pipe_in_fd);
-    printf("RECEIVED BYTES = %d\n", bytes_received);
     ssize_t read_bytes = read(pipe_in_fd, buffer, bytes_received);
     while (read_bytes > 0) {
         replaceLetters(buffer, read_bytes);
