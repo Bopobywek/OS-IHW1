@@ -4,7 +4,7 @@
 
 #ifndef OS_IHW1__CONSTANTS_H_
 #define OS_IHW1__CONSTANTS_H_
-#define BUFFER_SIZE 5000
+#define BUFFER_SIZE 100
 #define INDICATOR_SIZE 10
 
 #define IT_PIPE "transformer.pipe"
