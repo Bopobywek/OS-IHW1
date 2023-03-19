@@ -24,14 +24,6 @@ void replaceLetters(char string[], ssize_t size) {
     }
 }
 
-char buffer[BUFFER_SIZE];
-char sent_bytes[INDICATOR_SIZE];
-
-int getAvailableBytes(int pipe_in_fd) {
-    read(pipe_in_fd, buffer, INDICATOR_SIZE);
-    return atoi(buffer);
-}
-
 typedef struct {
     long mtype;
     char mtext[MESSAGE_SIZE];
