@@ -44,18 +44,34 @@ int main(int argc, char *argv[]) {
     continueIfFileCouldBeOpened(filename_in, fd_in);
     continueIfFileCouldBeOpened(filename_out, fd_out);
 
+    int status = 0;
+
     message_t message;
     message.mtype = 1;
+
     ssize_t read_bytes = read(fd_in, message.mtext + INDICATOR_SIZE, BUFFER_SIZE);
     printf("READ BYTES = %ld\n", read_bytes);
     message.mtext[0] = (char)read_bytes;
-    while (read_bytes > 0) {
-        msgsnd(msqid, &message, MESSAGE_SIZE, IPC_NOWAIT);
 
-        msgrcv(msqid, &message, MESSAGE_SIZE, 2, 0);
+    while (read_bytes > 0) {
+        status = msgsnd(msqid, &message, MESSAGE_SIZE, IPC_NOWAIT);
+        if (status < 0) {
+            perror("Can't send message\n");
+            exit(-1);
+        }
+
+        status = msgrcv(msqid, &message, MESSAGE_SIZE, 2, 0);
+        if (status < 0) {
+            perror("Can't receive message\n");
+            exit(-1);
+        }
         int bytes_received = (int)message.mtext[0];
 
-        write(fd_out, message.mtext + INDICATOR_SIZE, bytes_received);
+        status = write(fd_out, message.mtext + INDICATOR_SIZE, bytes_received);
+        if (status < 0) {
+            perror("Can't send message\n");
+            exit(-1);
+        }
 
         read_bytes = read(fd_in, message.mtext + INDICATOR_SIZE, BUFFER_SIZE);
         message.mtext[0] = (char)read_bytes;
@@ -66,6 +82,8 @@ int main(int argc, char *argv[]) {
     message.mtext[0] = (char)read_bytes;
     message.mtype = 1;
     msgsnd(msqid, &message, MESSAGE_SIZE, IPC_NOWAIT);
-    
+
+    msgctl(msqid, IPC_RMID, NULL);
+
     return 0;
 }

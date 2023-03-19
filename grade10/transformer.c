@@ -37,19 +37,37 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
     
+    int status = 0;
     message_t received_message;
-    msgrcv(msqid, &received_message, MESSAGE_SIZE, 1, 0);
+    status = msgrcv(msqid, &received_message, MESSAGE_SIZE, 1, 0);
+    if (status < 0) {
+        perror("Can't receive message\n");
+        exit(-1);
+    }
+    
     int bytes_received = received_message.mtext[0];
     printf("RECEIVED BYTES = %d\n", bytes_received);
+
     while (bytes_received > 0) {
         replaceLetters(received_message.mtext + INDICATOR_SIZE, bytes_received);
 
         received_message.mtype = 2;
-        msgsnd(msqid, &received_message, MESSAGE_SIZE, IPC_NOWAIT);
-
-        msgrcv(msqid, &received_message, MESSAGE_SIZE, 1, 0);
+        status = msgsnd(msqid, &received_message, MESSAGE_SIZE, IPC_NOWAIT);
+        if (status < 0) {
+            perror("Can't send message\n");
+            exit(-1);
+        }
+        
+        status = msgrcv(msqid, &received_message, MESSAGE_SIZE, 1, 0);
+        if (status < 0) {
+            perror("Can't receive message\n");
+            exit(-1);
+        }
         bytes_received = (int)received_message.mtext[0];
         printf("RECEIVED BYTES = %d\n", bytes_received);
     }
+
+    msgctl(msqid, IPC_RMID, NULL);
+
     return 0;
 }
