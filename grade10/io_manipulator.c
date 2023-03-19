@@ -11,6 +11,12 @@
 #include <semaphore.h>
 #include <sys/msg.h>
 
+void continueIfFileCouldBeOpened(char *filename, int status) {
+    if (status < 0) {
+        printf("Can't open file %s\n", filename);
+        exit(-1);
+    }
+}
 
 typedef struct {
     long mtype;
@@ -18,13 +24,25 @@ typedef struct {
 } message_t;
 
 int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        printf("Invalid args\n");
+        exit(-1);
+    }
+
     int msqid = msgget(MSG_KEY, IPC_CREAT | 0666);
+    if (msqid < 0) {
+        printf("Can't create message queue\n");
+        exit(-1);
+    }
 
     char *filename_in = argv[1];
     char *filename_out = argv[2];
 
     int fd_in = open(filename_in, O_RDONLY);
     int fd_out = open(filename_out, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+
+    continueIfFileCouldBeOpened(filename_in, fd_in);
+    continueIfFileCouldBeOpened(filename_out, fd_out);
 
     message_t message;
     message.mtype = 1;

@@ -39,6 +39,11 @@ int main(int argc, char *argv[]) {
     int pipe_in_fd = open(IT_PIPE, O_RDONLY);
     int pipe_out_fd = open(TI_PIPE, O_WRONLY);
 
+    if (pipe_in_fd < 0 || pipe_out_fd < 0) {
+        perror("Can't open pipes in transformer process\n");
+        exit(-1);
+    }
+
     printf("IN_FD: %d, OUT_FD: %d\n", pipe_in_fd, pipe_out_fd);
 
     int bytes_received = getAvailableBytes(pipe_in_fd);

@@ -50,5 +50,8 @@ int main(int argc, char *argv[]) {
 
     close(pipe_out_fd);
     close(pipe_in_fd); 
+    close(fd_in);
+    close(fd_out);
+    
     return 0;
 }

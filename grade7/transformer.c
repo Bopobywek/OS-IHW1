@@ -39,6 +39,11 @@ int main(int argc, char *argv[]) {
     int pipe_out_fd = open(argv[2], O_WRONLY);
     int pipe_in_fd = open(argv[1], O_RDONLY);
 
+    if (pipe_in_fd < 0 || pipe_out_fd < 0) {
+        perror("Can't open pipes in transformer process\n");
+        exit(-1);
+    }
+
     int bytes_received = getAvailableBytes(pipe_in_fd);
     ssize_t read_bytes = read(pipe_in_fd, buffer, bytes_received);
     while (read_bytes > 0) {

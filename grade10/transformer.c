@@ -32,6 +32,11 @@ typedef struct {
 int main(int argc, char *argv[]) {
     int msqid = msgget(MSG_KEY, IPC_CREAT | 0666);
 
+    if (msqid < 0) {
+        printf("Can't create message queue\n");
+        exit(-1);
+    }
+    
     message_t received_message;
     msgrcv(msqid, &received_message, MESSAGE_SIZE, 1, 0);
     int bytes_received = received_message.mtext[0];
